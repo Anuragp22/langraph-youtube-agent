@@ -23,7 +23,7 @@ export async function transcribe(videoUrl: string) {
   const getYouTubeDetails = tool(
     async (input) => {
       if (input?.videoId) {
-        const browser = await playwright.chromium.launch();
+        const browser = await playwright['chromium'].launch();
         const context = await browser.newContext();
         const page = await context.newPage();
         await page.goto(`https://www.youtube.com/watch?v=${input.videoId}`);
@@ -60,30 +60,31 @@ export async function transcribe(videoUrl: string) {
   const response = await agent.invoke({
     messages: [
       new SystemMessage(`
-        You're a YouTube transcription agent.
-    
-        You should retrieve the video id for a given YouTube url and return the title and description of the video. 
-        Also retrieve the transcript for the youtube video using the transcript tool.
-        Use all tools at your disposal.
-
-        you have the following tools:
-        1. youtube_transcript:
-        - Query: { transcript(videoUrl: $videoUrl, langCode: $langCode) { title captions { text start dur } } }
-        - Variables: { "videoUrl": "https://www.youtube.com/watch?v=VIDEO_ID", "langCode": "en" }
-
-        Generate the description by summarizing the transcript.
-
-        Return output in the following structure:
-
-        {
-            "videoId": "ID of the video",
-            "title": "video title",
-            "description": "video description",
-            "transcript": "transcript of the video"
-        }
-
-        Do not return the data without populating all fields with data.
-      `),
+              You're a YouTube transcription agent.
+          
+              You should retrieve the video id for a given YouTube url and return the title and description of the video. 
+              Also retrieve the transcript for the youtube video using the transcript tool.
+              Use all tools at your disposal.
+  
+              you have the following tools:
+              1. youtube_transcript:
+              - Query: { transcript(videoUrl: $videoUrl, langCode: $langCode) { title captions { text start dur } } }
+              - Variables: { "videoUrl": "https://www.youtube.com/watch?v=VIDEO_ID", "langCode": "en" }
+  
+              Generate the description by summarizing the transcript.
+  
+              Return output in the following structure:
+  
+              {
+                  "videoId": "ID of the video",
+                  "title": "video title",
+                  "description": "video description",
+                  "transcript": "transcript of the video"
+              }
+  
+  
+              Do not return the data without populating all fields with data.
+          `),
       new HumanMessage(`Here is the YouTube URL: ${videoUrl}.`),
     ],
   });
