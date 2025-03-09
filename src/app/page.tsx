@@ -6,13 +6,21 @@ import { transcribe } from "./actions";
 
 export default function Home() {
 
-  const [videoUrl, setVideoUrl] = useState("");
-  const [video, setVideo] = useState();
+  type Video = {
+    videoId: string;
+    title: string;
+    description: string;
+  };
+
+  const [videoUrl, setVideoUrl] = useState(
+    ""
+  );
+  const [video, setVideo] = useState<Video>();
 
   async function transcribeVideo() {
     const result = await transcribe(videoUrl);
 
-    const parsedResult = JSON.parse(result as string);
+    const parsedResult = JSON.parse(result as string) as Video;
 
     if (parsedResult?.videoId) {
       setVideo(parsedResult);
@@ -61,7 +69,7 @@ export default function Home() {
       video ? (
         <div className="flex flex-col my-8 lg:mx-40 mx-8">
           <h1 className="text-2xl font-bold tracking-tight text-white mb-4">
-            Retrieved video
+            {video?.title}
           </h1>
           <iframe
             width="560"
@@ -76,7 +84,7 @@ export default function Home() {
 
           <div className="mt-4 text-white">
             <h2 className="font-bold text-lg mb-2">Description</h2>
-            <p className="text-sm">Lorem ipsum...</p>
+            <p className="text-sm">{video.description}</p>
           </div>
         </div>
       ) : null
